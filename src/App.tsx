@@ -12,6 +12,8 @@ import { Typography } from "@material-ui/core";
 
 const App = () => {
   const [, dispatch] = useStateValue();
+
+
   React.useEffect(() => {
     void axios.get<void>(`${apiBaseUrl}/ping`);
 
@@ -27,6 +29,7 @@ const App = () => {
     };
     void fetchPatientList();
   }, [dispatch]);
+
 
   return (
     <div className="App">

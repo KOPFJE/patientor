@@ -18,3 +18,11 @@ export interface Patient {
   ssn?: string;
   dateOfBirth?: string;
 }
+
+export interface PatientInfoProps {
+  patient: Patient | null;
+}
+
+export interface Entry {
+  code?: string;
+}
