@@ -35,8 +35,7 @@ const PatientInfo = () => {
 
     if(!rPatient) {
         return(
-            <div>
-            </div>
+            <div></div>
         );
     }
     
