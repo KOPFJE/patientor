@@ -7,6 +7,7 @@ import { apiBaseUrl } from "./constants";
 import { useStateValue } from "./state";
 import { Patient } from "./types";
 
+import PatientInfo from "./PatientInfo";
 import PatientListPage from "./PatientListPage";
 import { Typography } from "@material-ui/core";
 
@@ -30,7 +31,6 @@ const App = () => {
     void fetchPatientList();
   }, [dispatch]);
 
-
   return (
     <div className="App">
       <Router>
@@ -43,6 +43,7 @@ const App = () => {
           </Button>
           <Divider hidden />
           <Routes>
+            <Route path="/:id" element={<PatientInfo />} />
             <Route path="/" element={<PatientListPage />} />
           </Routes>
         </Container>

@@ -17,12 +17,9 @@ export interface Patient {
   gender: Gender;
   ssn?: string;
   dateOfBirth?: string;
-}
-
-export interface PatientInfoProps {
-  patient: Patient | null;
+  entries: Entry[]
 }
 
 export interface Entry {
-  code?: string;
+  diagnosis: Diagnosis;
 }
