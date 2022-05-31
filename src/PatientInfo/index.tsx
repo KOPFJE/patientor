@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import { Gender, Patient, Diagnosis } from "../types";
+import { Gender, Patient, Diagnosis, Entry } from "../types";
 import { apiBaseUrl } from "../constants";
 import {useParams} from 'react-router-dom';
 import { useStateValue } from "../state";
@@ -56,6 +56,52 @@ const PatientInfo = () => {
         return diag.name;
     };
 
+    const renderCodes = (entry: Entry):JSX.Element => {
+        if(!entry.diagnosisCodes) return <span></span>;
+        const codes = entry.diagnosisCodes.map(diagnosis => <li key={diagnosis}><strong>{diagnosis}</strong> {findDiagnosis(diagnosis)}</li>);
+        return <ul>{codes}</ul>;
+    };
+
+    const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+        const assertNever = (value: never): never => {
+            throw new Error(
+              `Unhandled discriminated union member: ${JSON.stringify(value)}`
+            );
+        };
+        const codes = renderCodes(entry);
+        switch(entry.type) {
+            case "Hospital":
+                return (
+                    <Box key={entry.id}>
+                        <p>{entry.date}</p> 
+                        <p><em>{entry.description}</em></p> 
+                        {codes}
+                        <p>Diagnose by {entry.specialist}</p>
+                    </Box>
+                );
+            case "OccupationalHealthcare":
+                return (
+                    <Box key={entry.id}>
+                        <p>{entry.date} {entry.employerName}</p> 
+                        <p><em>{entry.description}</em></p> 
+                        {codes}
+                        <p>Diagnose by {entry.specialist}</p>
+                    </Box>
+                );
+            case "HealthCheck":
+                return (
+                    <Box key={entry.id}>
+                        <p>{entry.date}</p> 
+                        <p><em>{entry.description}</em></p> 
+                        {codes}
+                        <p>Diagnose by {entry.specialist}</p>
+                    </Box>
+                );
+            default:
+                return assertNever(entry);
+        }
+    };
+
     return(
         <div>
             <Box>
@@ -71,21 +117,7 @@ const PatientInfo = () => {
                 <Typography variant="h6">Entries</Typography>
                 {
                     rPatient.entries.map(entry => {
-                        console.log(entry);
-                        if(!entry.diagnosisCodes) {
-                            return (
-                                <p key={entry.id}>{entry.date} <em>{entry.description}</em></p>
-                            );
-                        } else {
-                            const codes = entry.diagnosisCodes.map(diagnosis => <li key={diagnosis}><strong>{diagnosis}</strong> {findDiagnosis(diagnosis)}</li>);
-                            return (
-                                <p key={entry.id}>{entry.date} <em>{entry.description}</em>
-                                    <ul>
-                                        {codes}
-                                    </ul>
-                                </p>
-                            );
-                        }
+                        return <EntryDetails key={entry.id} entry={entry} />;
                     })
                 }
             </Box>
