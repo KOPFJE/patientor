@@ -1,12 +1,17 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import { Gender, Patient, Diagnosis, Entry } from "../types";
 import { apiBaseUrl } from "../constants";
 import {useParams} from 'react-router-dom';
 import { useStateValue } from "../state";
 import { Box, Typography } from "@material-ui/core";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+import './style.css';
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
 import TransgenderIcon from '@mui/icons-material/Transgender';
+import WorkIcon from '@mui/icons-material/Work';
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import NextWeekIcon from '@mui/icons-material/NextWeek';
 import axios from "axios";
 
 const PatientInfo = () => {
@@ -19,21 +24,22 @@ const PatientInfo = () => {
             <div></div>
         );
     }
-  
-    const fetchPatient = async (id: string) => {
-        try {
-            const patient : Patient = await axios.get<Patient>(`${apiBaseUrl}/patients/${id}`).then(res => res.data);
-            setRpatient(patient);
-        } catch(error: unknown) {
-            let errorMsg = 'Something went wrong. ';
-            if(error instanceof Error) {
-                errorMsg += 'Error ' + error.message;
+    useEffect(() => {
+        const fetchPatient = async (id: string) => {
+            try {
+                const patient : Patient = await axios.get<Patient>(`${apiBaseUrl}/patients/${id}`).then(res => res.data);
+                setRpatient(patient);
+            } catch(error: unknown) {
+                let errorMsg = 'Something went wrong. ';
+                if(error instanceof Error) {
+                    errorMsg += 'Error ' + error.message;
+                }
+                console.log(errorMsg);
+                throw error;
             }
-            console.log(errorMsg);
-            throw error;
-        }
-    };
-    void fetchPatient(id);
+        };
+        void fetchPatient(id);
+    },[diagnosies]);
 
     if(!rPatient) {
         return(
@@ -63,6 +69,7 @@ const PatientInfo = () => {
     };
 
     const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+        let entryIcon;
         const assertNever = (value: never): never => {
             throw new Error(
               `Unhandled discriminated union member: ${JSON.stringify(value)}`
@@ -71,28 +78,40 @@ const PatientInfo = () => {
         const codes = renderCodes(entry);
         switch(entry.type) {
             case "Hospital":
+                entryIcon = <MedicalServicesIcon color="disabled" />;
                 return (
-                    <Box key={entry.id}>
-                        <p>{entry.date}</p> 
+                    <Box key={entry.id} className="entrybox">
+                        <p>{entry.date} {entryIcon}</p> 
                         <p><em>{entry.description}</em></p> 
                         {codes}
                         <p>Diagnose by {entry.specialist}</p>
                     </Box>
                 );
             case "OccupationalHealthcare":
+                entryIcon = <WorkIcon color="disabled" />;
                 return (
-                    <Box key={entry.id}>
-                        <p>{entry.date} {entry.employerName}</p> 
+                    <Box key={entry.id} className="entrybox">
+                        <p>{entry.date} {entryIcon} {entry.employerName}</p> 
                         <p><em>{entry.description}</em></p> 
                         {codes}
                         <p>Diagnose by {entry.specialist}</p>
                     </Box>
                 );
             case "HealthCheck":
+                entryIcon = <NextWeekIcon color="disabled" />;
+                let healthIcon = <span></span>;
+                if(entry.healthCheckRating < 1) {
+                    healthIcon = <FavoriteIcon className="healthy" />;
+                } else if(entry.healthCheckRating < 2) {
+                    healthIcon = <FavoriteIcon className="warning" />;
+                } else {
+                    healthIcon = <p><FavoriteIcon color="error" /></p>;
+                }
                 return (
-                    <Box key={entry.id}>
-                        <p>{entry.date}</p> 
-                        <p><em>{entry.description}</em></p> 
+                    <Box key={entry.id} className="entrybox">
+                        <p>{entry.date} {entryIcon}</p> 
+                        <p><em>{entry.description}</em></p>
+                        {healthIcon}
                         {codes}
                         <p>Diagnose by {entry.specialist}</p>
                     </Box>

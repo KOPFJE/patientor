@@ -1,0 +1,14 @@
+.entrybox {
+    display: block;
+    background: rgba(0,0,0,0.05);
+    border: 3px solid rgba(0,0,0,0.75);
+    border-radius: 1em;
+    margin-bottom: 1em;
+    padding: 0 10px 0 10px;
+}
+.healthy {
+    color: green;
+}
+.warning {
+    color: rgb(255, 208, 0);
+}
