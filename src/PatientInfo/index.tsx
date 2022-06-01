@@ -69,7 +69,6 @@ const PatientInfo = () => {
     };
 
     const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
-        let entryIcon;
         const assertNever = (value: never): never => {
             throw new Error(
               `Unhandled discriminated union member: ${JSON.stringify(value)}`
@@ -78,28 +77,25 @@ const PatientInfo = () => {
         const codes = renderCodes(entry);
         switch(entry.type) {
             case "Hospital":
-                entryIcon = <MedicalServicesIcon color="disabled" />;
                 return (
                     <Box key={entry.id} className="entrybox">
-                        <p>{entry.date} {entryIcon}</p> 
+                        <p>{entry.date} <MedicalServicesIcon color="disabled" /></p> 
                         <p><em>{entry.description}</em></p> 
                         {codes}
                         <p>Diagnose by {entry.specialist}</p>
                     </Box>
                 );
             case "OccupationalHealthcare":
-                entryIcon = <WorkIcon color="disabled" />;
                 return (
                     <Box key={entry.id} className="entrybox">
-                        <p>{entry.date} {entryIcon} {entry.employerName}</p> 
+                        <p>{entry.date} <WorkIcon color="disabled" /> {entry.employerName}</p> 
                         <p><em>{entry.description}</em></p> 
                         {codes}
                         <p>Diagnose by {entry.specialist}</p>
                     </Box>
                 );
             case "HealthCheck":
-                entryIcon = <NextWeekIcon color="disabled" />;
-                let healthIcon = <span></span>;
+                let healthIcon = null;
                 if(entry.healthCheckRating < 1) {
                     healthIcon = <FavoriteIcon className="healthy" />;
                 } else if(entry.healthCheckRating < 2) {
@@ -109,7 +105,7 @@ const PatientInfo = () => {
                 }
                 return (
                     <Box key={entry.id} className="entrybox">
-                        <p>{entry.date} {entryIcon}</p> 
+                        <p>{entry.date} <NextWeekIcon color="disabled" />;</p> 
                         <p><em>{entry.description}</em></p>
                         {healthIcon}
                         {codes}
