@@ -44,7 +44,7 @@ const PatientInfo = () => {
             }
         };
         void fetchPatient(id);
-    },[diagnosies, rPatient]);
+    },[diagnosies, modalOpen]);
 
     const openModal = (): void => { setModalOpen(true); };
 
@@ -55,13 +55,13 @@ const PatientInfo = () => {
 
     const submitNewEntry = async (values: EntryFormValues) => {
         try {
+            console.log(values);
             const { data: newEntry } = await axios.post<Entry>(
                 `${apiBaseUrl}/patients/${id}/entries`,
                 values
             );
             rPatient.entries.push(newEntry);
             dispatch(addEntry(rPatient));
-            setRpatient(rPatient);
             closeModal();
         } catch (e: unknown) {
             if (axios.isAxiosError(e)) {
@@ -134,11 +134,11 @@ const PatientInfo = () => {
                 } else if(entry.healthCheckRating < 2) {
                     healthIcon = <FavoriteIcon className="warning" />;
                 } else {
-                    healthIcon = <p><FavoriteIcon color="error" /></p>;
+                    healthIcon = <FavoriteIcon color="error" />;
                 }
                 return (
                     <Box key={entry.id} className="entrybox">
-                        <p>{entry.date} <NextWeekIcon color="disabled" />;</p> 
+                        <p>{entry.date} <NextWeekIcon color="disabled" /></p> 
                         <p><em>{entry.description}</em></p>
                         {healthIcon}
                         {codes}

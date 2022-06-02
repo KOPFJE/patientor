@@ -27,13 +27,66 @@ interface Props {
 
 const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
     const [{ diagnosies }] = useStateValue();
+
+    const TypeFields: React.FC<{ type: string }> = ({ type }) => {
+        switch(type) {
+            case "Hospital":
+                return (
+                    <div>
+                        <Field
+                            label="Criteria for Discharge"
+                            placeholder="Criteria"
+                            name="discharge.criteria"
+                            component={TextField}
+                        />
+                        <Field
+                            label="Discharge Date"
+                            placeholder="YYYY-MM-DD"
+                            name="discharge.date"
+                            component={TextField}
+                        />
+                    </div>
+                );
+            case "OccupationalHealthcare":
+                return (
+                    <div>
+                        <Field
+                            label="Employer Name"
+                            placeholder="Employer"
+                            name="employerName"
+                            component={TextField}
+                        />
+                        <Field
+                            label="Sick Leave Start Date"
+                            placeholder="YYYY-MM-DD"
+                            name="sickLeave.startDate"
+                            component={TextField}
+                        />
+                        <Field
+                            label="Sick Leave End Date"
+                            placeholder="YYYY-MM-DD"
+                            name="sickLeave.endDate"
+                            component={TextField}
+                        />
+                    </div>
+                );
+            case "HealthCheck":
+                return (
+                    <SelectField label="Health Check Rating" name="healthCheckRating" options={healthCheckRatingOptions} />
+                );
+            default:
+                return null;
+        }
+    };
+
     return (
       <Formik
         initialValues={{
-            type: "Hospital",
+            type: "HealthCheck",
             description: "",
             date: "",
             specialist: "",
+            diagnosisCodes: [],
         }}
       onSubmit={onSubmit}
       validate={values => {
@@ -50,8 +103,10 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
         }
         return errors;
       }}
+
+      
     >
-      {({ isValid, dirty, setFieldValue, setFieldTouched }) => {
+      {({ isValid, dirty, setFieldValue, setFieldTouched, values }) => {
         return (
           <Form className="form ui">
             <Field
@@ -75,13 +130,13 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
               component={TextField}
             />
 
-            <SelectField label="Health Check Rating" name="healthCheckRating" options={healthCheckRatingOptions} />
-
             <DiagnosisSelection            
                 setFieldValue={setFieldValue}            
                 setFieldTouched={setFieldTouched}            
                 diagnoses={Object.values(diagnosies)}          
             />    
+
+            <TypeFields type={values.type} />
 
             <Grid>
               <Grid item>
