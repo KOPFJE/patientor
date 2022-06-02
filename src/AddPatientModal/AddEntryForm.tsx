@@ -1,7 +1,7 @@
 import React from "react";
 import { Formik, Form, Field } from "formik";
 import { useStateValue } from "../state";
-import { DiagnosisSelection, SelectField, TextField, TypeOption } from "./FormField";
+import { DiagnosisSelection, SelectField, TextField, TypeOption, HealthCheckRatingOption } from "./FormField";
 import { Entry } from "../types";
 import { Button, Grid } from "@material-ui/core";
 
@@ -18,6 +18,13 @@ interface Props {
     { value: "OccupationalHealthcare", label: "Occupational Healthcare" },
   ];
 
+  const healthCheckRatingOptions: HealthCheckRatingOption[] = [
+    { value: "Healthy", label: "Healthy Condition" },
+    { value: "LowRisk", label: "In Low Risk" },
+    { value: "HighRisk", label: "In High Risk" },
+    { value: "CriticalRisk", label: "In Critical Risk" },
+  ];
+
 const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
     const [{ diagnosies }] = useStateValue();
     return (
@@ -26,15 +33,25 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
             type: "Hospital",
             description: "",
             date: "",
-            specialist: ""
+            specialist: "",
         }}
       onSubmit={onSubmit}
       validate={values => {
-        console.log(values);
+        const requiredError = "Field is required";
+        const errors: { [field: string]: string } = {};
+        if (!values.description) {
+          errors.description = requiredError;
+        }
+        if (!values.date) {
+          errors.date = requiredError;
+        }
+        if (!values.specialist) {
+          errors.specialist = requiredError;
+        }
+        return errors;
       }}
     >
       {({ isValid, dirty, setFieldValue, setFieldTouched }) => {
-        console.log(isValid, dirty);
         return (
           <Form className="form ui">
             <Field
@@ -57,6 +74,8 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
               name="specialist"
               component={TextField}
             />
+
+            <SelectField label="Health Check Rating" name="healthCheckRating" options={healthCheckRatingOptions} />
 
             <DiagnosisSelection            
                 setFieldValue={setFieldValue}            

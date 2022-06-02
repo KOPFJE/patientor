@@ -45,5 +45,8 @@ export const setDiagnosisList = (content: Diagnosis[]):Action => {
 export const addPatient = (content: Patient):Action => {
   return { type: "ADD_PATIENT", payload: content };
 };
+export const addEntry = (gPatient:Patient):Action => {
+  return { type: "ADD_ENTRY", patient: gPatient};
+};
 export const useStateValue = () => useContext(StateContext);
 

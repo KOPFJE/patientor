@@ -2,7 +2,7 @@ import {useState, useEffect} from 'react';
 import { Gender, Patient, Diagnosis, Entry } from "../types";
 import { apiBaseUrl } from "../constants";
 import {useParams} from 'react-router-dom';
-import { useStateValue } from "../state";
+import { addEntry, useStateValue } from "../state";
 import { Box, Typography, Button } from "@material-ui/core";
 import { AddEntryModal } from '../AddPatientModal';
 import FavoriteIcon from "@material-ui/icons/Favorite";
@@ -14,9 +14,10 @@ import WorkIcon from '@mui/icons-material/Work';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import NextWeekIcon from '@mui/icons-material/NextWeek';
 import axios from "axios";
+import { EntryFormValues } from '../AddPatientModal/AddEntryForm';
 
 const PatientInfo = () => {
-    const [{patient, diagnosies}] = useStateValue();
+    const [{patient, diagnosies}, dispatch] = useStateValue();
     const { id } = useParams<{ id: string }>();
     const [rPatient, setRpatient] = useState(patient);
     const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -27,6 +28,7 @@ const PatientInfo = () => {
             <div></div>
         );
     }
+
     useEffect(() => {
         const fetchPatient = async (id: string) => {
             try {
@@ -42,7 +44,7 @@ const PatientInfo = () => {
             }
         };
         void fetchPatient(id);
-    },[diagnosies]);
+    },[diagnosies, rPatient]);
 
     const openModal = (): void => { setModalOpen(true); };
 
@@ -51,8 +53,25 @@ const PatientInfo = () => {
       setError(undefined);
     };
 
-    const submitNewEntry = (): void => {
-        console.log("Submit");
+    const submitNewEntry = async (values: EntryFormValues) => {
+        try {
+            const { data: newEntry } = await axios.post<Entry>(
+                `${apiBaseUrl}/patients/${id}/entries`,
+                values
+            );
+            rPatient.entries.push(newEntry);
+            dispatch(addEntry(rPatient));
+            setRpatient(rPatient);
+            closeModal();
+        } catch (e: unknown) {
+            if (axios.isAxiosError(e)) {
+            console.error(e?.response?.data || "Unrecognized axios error");
+            setError(String(e?.response?.data?.error) || "Unrecognized axios error");
+            } else {
+            console.error("Unknown error", e);
+            setError("Unknown error");
+            }
+        }
     };
 
     if(!rPatient) {
