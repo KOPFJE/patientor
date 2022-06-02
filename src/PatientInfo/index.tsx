@@ -3,7 +3,8 @@ import { Gender, Patient, Diagnosis, Entry } from "../types";
 import { apiBaseUrl } from "../constants";
 import {useParams} from 'react-router-dom';
 import { useStateValue } from "../state";
-import { Box, Typography } from "@material-ui/core";
+import { Box, Typography, Button } from "@material-ui/core";
+import { AddEntryModal } from '../AddPatientModal';
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import './style.css';
 import FemaleIcon from '@mui/icons-material/Female';
@@ -18,6 +19,8 @@ const PatientInfo = () => {
     const [{patient, diagnosies}] = useStateValue();
     const { id } = useParams<{ id: string }>();
     const [rPatient, setRpatient] = useState(patient);
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const [error, setError] = useState<string>();
 
     if(!id) {
         return(
@@ -40,6 +43,17 @@ const PatientInfo = () => {
         };
         void fetchPatient(id);
     },[diagnosies]);
+
+    const openModal = (): void => { setModalOpen(true); };
+
+    const closeModal = (): void => {
+      setModalOpen(false);
+      setError(undefined);
+    };
+
+    const submitNewEntry = (): void => {
+        console.log("Submit");
+    };
 
     if(!rPatient) {
         return(
@@ -120,7 +134,7 @@ const PatientInfo = () => {
     return(
         <div>
             <Box>
-            <Typography variant="h5">{rPatient.name} {genderIcon}</Typography>
+                <Typography variant="h5">{rPatient.name} {genderIcon}</Typography>
             </Box>
             <Box>
                 <ul>
@@ -130,6 +144,17 @@ const PatientInfo = () => {
             </Box>
             <Box>
                 <Typography variant="h6">Entries</Typography>
+                <Box>
+                    <AddEntryModal
+                        modalOpen={modalOpen}
+                        onSubmit={submitNewEntry}
+                        error={error}
+                        onClose={closeModal}
+                    />
+                    <Button variant="contained" onClick={() => openModal()}>
+                        Add New Entry
+                    </Button>
+                </Box>
                 {
                     rPatient.entries.map(entry => {
                         return <EntryDetails key={entry.id} entry={entry} />;
