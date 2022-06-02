@@ -113,16 +113,20 @@ const PatientInfo = () => {
                 return (
                     <Box key={entry.id} className="entrybox">
                         <p>{entry.date} <MedicalServicesIcon color="disabled" /></p> 
-                        <p><em>{entry.description}</em></p> 
+                        <p><em>{entry.description}</em></p>
+                        <p>{entry.discharge.date} {entry.discharge.criteria}</p>
                         {codes}
                         <p>Diagnose by {entry.specialist}</p>
                     </Box>
                 );
             case "OccupationalHealthcare":
+                let sickLeave = null;
+                if(entry.sickLeave) sickLeave = <p>Sick leave given: {entry.sickLeave.startDate} - {entry.sickLeave.endDate}</p>;
                 return (
                     <Box key={entry.id} className="entrybox">
                         <p>{entry.date} <WorkIcon color="disabled" /> {entry.employerName}</p> 
-                        <p><em>{entry.description}</em></p> 
+                        <p><em>{entry.description}</em></p>
+                        {sickLeave}
                         {codes}
                         <p>Diagnose by {entry.specialist}</p>
                     </Box>
