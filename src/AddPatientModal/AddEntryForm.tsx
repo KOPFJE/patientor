@@ -14,32 +14,48 @@ interface HCEntry extends EntryFormValues {
 interface Props {
     onSubmit: (values: EntryFormValues) => void;
     onCancel: () => void;
+}
+
+const typeOptions: TypeOption[] = [
+  { value: "Hospital", label: "Hospital Visit" },
+  { value: "HealthCheck", label: "Health Check-up" },
+  { value: "OccupationalHealthcare", label: "Occupational Healthcare" },
+];
+
+const healthCheckRatingOptions: HealthCheckRatingOption[] = [
+  { value: 0, label: "Healthy Condition" },
+  { value: 1, label: "In Low Risk" },
+  { value: 2, label: "In High Risk" },
+  { value: 3, label: "In Critical Risk" },
+];
+
+const validateField = (value: string) => {
+  let error = null;
+  const requiredError = "Field is required";
+  if(!value) error =  requiredError;
+  return error;
+};
+
+const validateDateRequired = (date: string) => {
+  let error = null;
+  error = validateField(date);
+  error = validateDate(date);
+  return error;
+};
+
+const validateDate = (date: string) => {
+  let error = null;
+  const formatError = "Not a right format for date.";
+  if(date) {
+    if(!date.match(/(\d{4})-(\d{2})-(\d{2})/)) error = formatError; 
   }
-
-  const typeOptions: TypeOption[] = [
-    { value: "Hospital", label: "Hospital Visit" },
-    { value: "HealthCheck", label: "Health Check-up" },
-    { value: "OccupationalHealthcare", label: "Occupational Healthcare" },
-  ];
-
-  const healthCheckRatingOptions: HealthCheckRatingOption[] = [
-    { value: 0, label: "Healthy Condition" },
-    { value: 1, label: "In Low Risk" },
-    { value: 2, label: "In High Risk" },
-    { value: 3, label: "In Critical Risk" },
-  ];
+  return error;
+};
 
 const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
     const [{ diagnosies }] = useStateValue();
 
     const TypeFields: React.FC<{ values:EntryFormValues, type: string }> = ({ type, values }) => {
-      const validateField = (value: string) => {
-        let error = null;
-        const requiredError = "Field is required";
-        if(!value) error =  requiredError;
-        return error;
-      };
-    
       switch(type) {
         case "Hospital":
           return (
@@ -49,43 +65,47 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
                   placeholder="Criteria"
                   name="discharge.criteria"
                   component={TextField}
+                  validate={validateField}
               />
               <Field
                 label="Discharge Date"
                 placeholder="YYYY-MM-DD"
                 name="discharge.date"
                 component={TextField}
+                validate={validateDateRequired}
               />
             </div>
           );
         case "OccupationalHealthcare":
           return (
             <div>
-            	<Field
-                	label="Employer Name"
-                	placeholder="Employer"
-                	name="employerName"
-                	component={TextField}
+              <Field
+                  label="Employer Name"
+                  placeholder="Employer"
+                  name="employerName"
+                  component={TextField}
                   validate={validateField}
-              	/>
-                <Field
-                    label="Sick Leave Start Date"
-                    placeholder="YYYY-MM-DD"
-                    name="sickLeave.startDate"
-                    component={TextField}
-                />
+              />
+              <Field
+                  label="Sick Leave Start Date"
+                  placeholder="YYYY-MM-DD"
+                  name="sickLeave.startDate"
+                  component={TextField}
+                  validate={validateDate}
+              />
               <Field
                   label="Sick Leave End Date"
                   placeholder="YYYY-MM-DD"
                   name="sickLeave.endDate"
                   component={TextField}
+                  validate={validateDate}
               />
             </div>
           );
         case "HealthCheck":
             const hcvalues = values as HCEntry;
-            hcvalues.healthCheckRating = 0;
-            values = hcvalues as HCEntry;
+            if(!hcvalues.healthCheckRating) hcvalues.healthCheckRating = 0;
+            values = hcvalues;
             return (
               <SelectField label="Health Check Rating" name="healthCheckRating" options={healthCheckRatingOptions} />
           );
@@ -97,7 +117,7 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
     return (
       <Formik
         initialValues={{
-            type: "HealthCheck",
+            type: "Hospital",
             description: "",
             date: "",
             specialist: "",
@@ -108,11 +128,13 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
         const requiredError = "Field is required";
         const errors: { [field: string]: string } = {};
         console.log(errors);
+        if(!values.date) {
+          errors.date = requiredError;
+        }
+        const formatError = validateDate(values.date);
+        if(formatError) errors.date = formatError;
         if (!values.description) {
           errors.description = requiredError;
-        }
-        if (!values.date) {
-          errors.date = requiredError;
         }
         if (!values.specialist) {
           errors.specialist = requiredError;
