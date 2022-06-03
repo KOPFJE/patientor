@@ -55,12 +55,12 @@ const PatientInfo = () => {
 
     const submitNewEntry = async (values: EntryFormValues) => {
         try {
-            console.log(values);
             const { data: newEntry } = await axios.post<Entry>(
                 `${apiBaseUrl}/patients/${id}/entries`,
                 values
             );
             rPatient.entries.push(newEntry);
+            console.log(newEntry);
             dispatch(addEntry(rPatient));
             closeModal();
         } catch (e: unknown) {
@@ -122,6 +122,7 @@ const PatientInfo = () => {
             case "OccupationalHealthcare":
                 let sickLeave = null;
                 if(entry.sickLeave) sickLeave = <p>Sick leave given: {entry.sickLeave.startDate} - {entry.sickLeave.endDate}</p>;
+                
                 return (
                     <Box key={entry.id} className="entrybox">
                         <p>{entry.date} <WorkIcon color="disabled" /> {entry.employerName}</p> 
@@ -133,13 +134,21 @@ const PatientInfo = () => {
                 );
             case "HealthCheck":
                 let healthIcon = null;
-                if(entry.healthCheckRating < 1) {
-                    healthIcon = <FavoriteIcon className="healthy" />;
-                } else if(entry.healthCheckRating < 2) {
-                    healthIcon = <FavoriteIcon className="warning" />;
-                } else {
-                    healthIcon = <FavoriteIcon color="error" />;
-                }
+                switch(entry.healthCheckRating as number) {
+                    case 0:
+                        healthIcon = <FavoriteIcon className="healthy" />;
+                        break;
+                    case 1:
+                        healthIcon = <FavoriteIcon className="warning" />;
+                        break;
+                    case 2:
+                        healthIcon = <FavoriteIcon className="highrisk" />;
+                        break;
+                    default:
+                        healthIcon = <FavoriteIcon color="error" />;
+                        break;
+                } 
+                
                 return (
                     <Box key={entry.id} className="entrybox">
                         <p>{entry.date} <NextWeekIcon color="disabled" /></p> 

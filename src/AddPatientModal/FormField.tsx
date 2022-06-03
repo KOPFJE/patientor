@@ -23,7 +23,7 @@ export type TypeOption = {
 };
 
 export type HealthCheckRatingOption = {
-  value:  "Healthy" | "LowRisk" | "HighRisk" | "CriticalRisk";
+  value:  number;
   label: string;
 };
 

@@ -19,10 +19,10 @@ interface Props {
   ];
 
   const healthCheckRatingOptions: HealthCheckRatingOption[] = [
-    { value: "Healthy", label: "Healthy Condition" },
-    { value: "LowRisk", label: "In Low Risk" },
-    { value: "HighRisk", label: "In High Risk" },
-    { value: "CriticalRisk", label: "In Critical Risk" },
+    { value: 0, label: "Healthy Condition" },
+    { value: 1, label: "In Low Risk" },
+    { value: 2, label: "In High Risk" },
+    { value: 3, label: "In Critical Risk" },
   ];
 
 const AddEntryForm = ({ onSubmit, onCancel }: Props) => {

@@ -48,12 +48,9 @@ export const reducer = (state: State, action: Action): State => {
       newState.patients[action.payload.id] = action.payload;
       return newState;
     case "ADD_ENTRY":
-      return {
-        ...state,
-        patients: {
-          ...state.patients,
-        }
-      };
+      const entryState = state;
+      entryState.patients[action.patient.id] = action.patient;
+      return entryState;
     default:
       return state;
   }
