@@ -3,7 +3,7 @@ import { Formik, Form, Field } from "formik";
 import { useStateValue } from "../state";
 import { DiagnosisSelection, SelectField, TextField, TypeOption, HealthCheckRatingOption } from "./FormField";
 import { Entry} from "../types";
-import { Button, Grid } from "@material-ui/core";
+import { Box, Button, Grid } from "@material-ui/core";
 
 export type EntryFormValues = Omit<Entry, "id">;
 
@@ -59,7 +59,7 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
       switch(type) {
         case "Hospital":
           return (
-            <div> 
+            <Box> 
               <Field
                   label="Criteria for Discharge"
                   placeholder="Criteria"
@@ -74,11 +74,11 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
                 component={TextField}
                 validate={validateDateRequired}
               />
-            </div>
+            </Box>
           );
         case "OccupationalHealthcare":
           return (
-            <div>
+            <Box>
               <Field
                   label="Employer Name"
                   placeholder="Employer"
@@ -100,7 +100,7 @@ const AddEntryForm = ({ onSubmit, onCancel }: Props) => {
                   component={TextField}
                   validate={validateDate}
               />
-            </div>
+            </Box>
           );
         case "HealthCheck":
             const hcvalues = values as HCEntry;
